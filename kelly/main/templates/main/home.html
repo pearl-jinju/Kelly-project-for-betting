@@ -1,0 +1,118 @@
+<!--static load-->
+{% load static %}  
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>딸깍! 한번으로 쉽게 돈을 벌어보자!</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- 폰트 -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="container text-center ">
+    <h2 class="font-weight-bold">자동베팅프로그램 "딸깍" </h2>
+    
+    <h2 class="font-weight-bold">{{warning}} </h2>
+
+
+     <!-- 드롭다운 메뉴 -->
+     <select class="form-control mt-5 mb-1" id="sports-dropdown">
+      <option value="">종목을 골라주세요</option>
+      <option value="전체">전체</option>
+      <option value="축구">축구</option>
+      <option value="야구">야구</option>
+      <option value="농구">농구</option>
+    </select>
+    <!-- 드롭다운 메뉴 -->
+    <select class="form-control mt-1 mb-1" id="betstyle-dropdown">
+      <option value="">배팅 유형을 골라주세요</option>
+      <option value="미구현"  >일반(개발중)</option>
+      <option value="미구현" >핸디캡(개발중)</option>
+      <option value="언더오버">언더오버</option>
+    </select>
+
+    <div id="warning_1" class="container text-center mt-3 mb-3">
+      <h2> </h2>
+    </div>
+
+    <div class="form-group mt-5">
+      <input type="text" class="form-control" id="cashlimit" placeholder="최대베팅한도(미입력시 현재 보유금액기준)" required>
+    </div>
+
+    <div class="form-group mt-5">
+      <input type="text" class="form-control" id="username" placeholder="아이디를 입력하세요" required>
+    </div>
+    <div class="form-group">
+      <input type="password" class="form-control" id="password" placeholder="비밀번호를 입력하세요" required>
+    </div>
+
+    <div id="warning_2" class="container text-center mt-3 mb-3">
+      <h2> </h2>
+    </div>
+
+    <a id="loginForm" class="btn btn-primary" onclick="go()">딸깍!</a>
+  </div>
+
+
+  <script>
+    // 폼 제출 시 동작할 함수
+    function go(){
+      
+      // 입력된 아이디와 비밀번호 가져오기
+      var username = document.getElementById('username').value;
+      var password = document.getElementById('password').value;
+      var sports = document.getElementById('sports-dropdown').value;
+      var betstyle = document.getElementById('betstyle-dropdown').value;
+      var cashlimit = document.getElementById('cashlimit').value;
+
+      if (sports==""){
+        document.getElementById("warning_1").innerText = "종목을 선택하세요!";
+      }else{
+        if (betstyle==""){
+        document.getElementById("warning_1").innerText = "배팅유형을 선택하세요";
+      }else if(betstyle=="미구현"){
+        document.getElementById("warning_1").innerText = "아직 구현되지 않았습니다! 다른 유형을 선택해주세요!";
+      }      }
+
+
+
+      if (username==""){
+        document.getElementById("warning_2").innerText = "ID를 입력하세요";
+      }else{
+        if(password==""){
+          document.getElementById("warning_2").innerText = "PW를 입력하세요";
+        }else{      
+          // 아이디와 비밀번호를 매개변수로하여 URL 생성
+          var url = "/autobet?username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password)  + "&sports=" + encodeURIComponent(sports)  + "&betstyle=" + encodeURIComponent(betstyle)   + "&cashlimit=" + encodeURIComponent(cashlimit)             ;
+
+          // 생성된 URL로 이동
+          window.location.href = url;
+        }
+      }
+      
+
+    };
+  
+  </script>
+
+<script>
+  $(document).ready(function(){
+    $('.dropdown-item').click(function(){
+      var selectedText = $(this).text(); // 클릭한 항목의 텍스트 가져오기
+      $('#dropdownMenuButton').text(selectedText); // 드롭다운 버튼 텍스트 변경
+    });
+  });
+
+  </script>
+
+
+<!-- 부트스트랩 JS와 jQuery 라이브러리를 사용하기 위한 스크립트 링크 -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

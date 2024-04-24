@@ -1,0 +1,54 @@
+<!--static load-->
+{% load static %}  
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>딸깍! 한번으로 쉽게 돈을 벌어보자!</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- 폰트 -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <h1 class="text-center mb-4">Kelly Project</h1>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">경기 번호</th>
+            <th scope="col">팀명</th>
+            <th scope="col">캘리비율</th>
+            <th scope="col">배당률</th>
+            <th scope="col">배팅금액</th>
+            <th scope="col">잔액</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for idx, data in betting_df.iterrows %}
+          <tr>
+            <th scope="row">{{data.no}}</th>
+            <td>{{data.teams}}</td>
+            <td>{{data.kelly_rate}}</td>
+            <td>{{data.odd}}</td>
+            <td>{{data.amt}}</td>
+            <td>{{data.cash}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h1 class="text-center mb-4">-------------</h1>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
