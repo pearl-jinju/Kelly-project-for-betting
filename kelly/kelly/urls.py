@@ -16,10 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from main.views import MainPage, AutoBet
+from main.views import MainPage, AutoBet ,Save_Recent_Data,Save_All_Data, DBsearch,Pick
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', MainPage.as_view()),
     path('autobet', AutoBet.as_view()),
+    path('save_data', Save_Recent_Data.as_view()),
+    path('save_all_data', Save_All_Data.as_view()),
+    path('dbsearch', DBsearch.as_view()),
+    path('pick', Pick.as_view()),
 ]

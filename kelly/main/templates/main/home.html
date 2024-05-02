@@ -8,77 +8,240 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>딸깍! 한번으로 쉽게 돈을 벌어보자!</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <!-- 폰트 -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .toggle-container {
+  position: relative;
+  width: 50px;
+  height: 25px;
+}
+
+.toggle-input {
+  display: none;
+}
+
+.toggle-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ccc;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+.toggle-input:checked + .toggle-label {
+  background-color: #4caf50;
+}
+
+.toggle-label::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 23px;
+  height: 23px;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.toggle-input:checked + .toggle-label::after {
+  transform: translateX(25px);
+}
+
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+/* 로딩 스피너 스타일 */
+.loader {
+  border: 8px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 8px solid #3498db;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+  </style>
+
 </head>
 <body>
 
   <div class="container text-center ">
-    <h2 class="font-weight-bold">자동베팅프로그램 "딸깍" </h2>
+    <h2 class="font-weight-bold mb-3">자동베팅프로그램 "딸깍" </h2>
     
+    <div class="container">
+      <div class="row">
+        <div class="col-sm">
+          <div class="bg-primary text-white p-3 font-weight-bold" id="mode_name">배팅모드</div>
+        </div>
+        <div class="col-sm">
+          <div class="bg-white text-white p-3 d-flex justify-content-center align-items-center">  
+              <div class="toggle-container">
+            <input type="checkbox" id="toggle" class="toggle-input">
+            <label for="toggle" class="toggle-label"></label>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+
+  <div class="container" id="normalmode">
     <h2 class="font-weight-bold">{{warning}} </h2>
 
-
      <!-- 드롭다운 메뉴 -->
-     <select class="form-control mt-5 mb-1" id="sports-dropdown">
+     <!-- <select class="form-control mt-5 mb-1" id="sports-dropdown">
       <option value="">종목을 골라주세요</option>
       <option value="전체">전체</option>
       <option value="축구">축구</option>
       <option value="야구">야구</option>
       <option value="농구">농구</option>
-    </select>
+    </select> -->
     <!-- 드롭다운 메뉴 -->
-    <select class="form-control mt-1 mb-1" id="betstyle-dropdown">
+    <!-- <select class="form-control mt-1 mb-1" id="betstyle-dropdown">
       <option value="">배팅 유형을 골라주세요</option>
       <option value="미구현"  >일반(개발중)</option>
       <option value="미구현" >핸디캡(개발중)</option>
       <option value="언더오버">언더오버</option>
-    </select>
+    </select> -->
 
     <div id="warning_1" class="container text-center mt-3 mb-3">
       <h2> </h2>
     </div>
 
-    <div class="form-group mt-5">
-      <input type="text" class="form-control" id="cashlimit" placeholder="최대베팅한도(미입력시 현재 보유금액기준)" required>
-    </div>
+    <!-- <div class="form-group mt-5">
+      <input type="text" class="form-control" id="cashlimit" placeholder="사용할 금액(미입력시 현재 보유금액기준)" required>
+    </div> -->
 
-    <div class="form-group mt-5">
-      <input type="text" class="form-control" id="username" placeholder="아이디를 입력하세요" required>
-    </div>
-    <div class="form-group">
-      <input type="password" class="form-control" id="password" placeholder="비밀번호를 입력하세요" required>
-    </div>
+
+    <!-- <div class="form-group">
+      <input type="text" class="form-control" id="max_kelly" placeholder="1회당 최대 비중을 입력하세요(기본10%)" required>
+    </div> -->
 
     <div id="warning_2" class="container text-center mt-3 mb-3">
       <h2> </h2>
     </div>
 
-    <a id="loginForm" class="btn btn-primary" onclick="go()">딸깍!</a>
+   
   </div>
+</div>
+<div class="container" >
+  <div class="form-group mt-5">
+    <input type="text" class="form-control" id="username" placeholder="아이디를 입력하세요" required>
+  </div>
+  <div class="form-group">
+    <input type="password" class="form-control" id="password" placeholder="비밀번호를 입력하세요" required>
+  </div>
+</div>
 
+</div>
+
+<div class="container d-flex justify-content-center align-items-center" >
+  <a id="normal_button"  class="btn btn-primary" onclick="go()">데이터 조회</a>
+</div>
+
+
+
+<div   class="container d-flex justify-content-center align-items-center" >
+  <a id="prob_button"  style="display: none;" class="btn btn-primary" onclick="goprob()">DB불러오기</a>
+</div>
+
+<div id="loadingModal" class="modal" >
+  <div class="modal-content">
+    <div class="loader"></div>
+    <p>로딩중입니다.</p>
+  </div>
+</div>
+
+
+
+ 
+  
+  <script>
+     const toggleSwitch = document.getElementById('toggle');
+     const normal_button = document.getElementById('normal_button');
+     const prob_button = document.getElementById('prob_button');
+     const amt = document.getElementById('amt');
+     
+     
+
+toggleSwitch.addEventListener('change', function() {
+  if (this.checked) {
+    console.log('스위치가 켜졌습니다.');
+    // 여기에 켜졌을 때 실행할 작업 추가
+    normal_button.style.display = 'none'; // 숨기기
+    prob_button.style.display = 'block'; // 보이기
+    
+    document.getElementById('mode_name').classList.remove('bg-primary');
+    document.getElementById('mode_name').classList.add('bg-secondary');
+    document.getElementById('mode_name').innerText =  "DB모드"
+    
+  } else {
+    console.log('스위치가 꺼졌습니다.');
+    normal_button.style.display = 'block'; // 보이기
+    prob_button.style.display = 'none'; // 숨기기
+    
+
+    document.getElementById('mode_name').classList.remove('bg-secondary');
+    document.getElementById('mode_name').classList.add('bg-primary');
+    document.getElementById('mode_name').innerText = "배팅모드"
+    // 여기에 꺼졌을 때 실행할 작업 추가
+  }
+});
+  </script>
 
   <script>
     // 폼 제출 시 동작할 함수
     function go(){
       
       // 입력된 아이디와 비밀번호 가져오기
+      // document.getElementById('loadingModal').style.display = 'block';
       var username = document.getElementById('username').value;
       var password = document.getElementById('password').value;
-      var sports = document.getElementById('sports-dropdown').value;
-      var betstyle = document.getElementById('betstyle-dropdown').value;
-      var cashlimit = document.getElementById('cashlimit').value;
+      // var sports = document.getElementById('sports-dropdown').value;
+      // var betstyle = document.getElementById('betstyle-dropdown').value;
+      // var cashlimit = document.getElementById('cashlimit').value;
+      // var max_kelly = document.getElementById('max_kelly').value;
 
-      if (sports==""){
-        document.getElementById("warning_1").innerText = "종목을 선택하세요!";
-      }else{
-        if (betstyle==""){
-        document.getElementById("warning_1").innerText = "배팅유형을 선택하세요";
-      }else if(betstyle=="미구현"){
-        document.getElementById("warning_1").innerText = "아직 구현되지 않았습니다! 다른 유형을 선택해주세요!";
-      }      }
-
-
+      // if (sports==""){
+      //   document.getElementById("warning_1").innerText = "종목을 선택하세요!";
+      // }else{
+      //   if (betstyle==""){
+      //   document.getElementById("warning_1").innerText = "배팅유형을 선택하세요";
+      // }else if(betstyle=="미구현"){
+      //   document.getElementById("warning_1").innerText = "아직 구현되지 않았습니다! 다른 유형을 선택해주세요!";
+      // }      }
 
       if (username==""){
         document.getElementById("warning_2").innerText = "ID를 입력하세요";
@@ -87,7 +250,34 @@
           document.getElementById("warning_2").innerText = "PW를 입력하세요";
         }else{      
           // 아이디와 비밀번호를 매개변수로하여 URL 생성
-          var url = "/autobet?username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password)  + "&sports=" + encodeURIComponent(sports)  + "&betstyle=" + encodeURIComponent(betstyle)   + "&cashlimit=" + encodeURIComponent(cashlimit)             ;
+          var url = "/dbsearch?username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password)    ;
+
+          // 생성된 URL로 이동
+          window.location.href = url;
+        }
+      }
+      
+
+    };
+
+
+    function goprob(){
+      
+      // 입력된 아이디와 비밀번호 가져오기
+      document.getElementById('loadingModal').style.display = 'block';
+      var username = document.getElementById('username').value;
+      var password = document.getElementById('password').value;
+
+      
+
+      if (username==""){
+        document.getElementById("warning_2").innerText = "ID를 입력하세요";
+      }else{
+        if(password==""){
+          document.getElementById("warning_2").innerText = "PW를 입력하세요";
+        }else{      
+          // 아이디와 비밀번호를 매개변수로하여 URL 생성
+          var url = "/save_data?username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password)    ;
 
           // 생성된 URL로 이동
           window.location.href = url;
@@ -97,7 +287,10 @@
 
     };
   
+
+    
   </script>
+  <script src="script.js"></script>
 
 <script>
   $(document).ready(function(){
@@ -108,6 +301,9 @@
   });
 
   </script>
+
+
+
 
 
 <!-- 부트스트랩 JS와 jQuery 라이브러리를 사용하기 위한 스크립트 링크 -->

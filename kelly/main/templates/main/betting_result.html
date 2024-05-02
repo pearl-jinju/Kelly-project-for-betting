@@ -1,0 +1,94 @@
+<!--static load-->
+{% load static %}  
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>딸깍! 한번으로 쉽게 돈을 벌어보자!</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- 폰트 -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+
+  <div class="row justify-content-center">
+    <button type="button" class="btn btn-success mt-4 mb-4 font-weight-bold" >최종 배당률 : {{final_odd}}배</button>
+    <button type="button" class="btn btn-success mt-4 mb-4 font-weight-bold" >적중시 금액 : {{final_amt}}원</button>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th scope="col">번호</th>
+          <th scope="col">일자</th>
+          <th scope="col">마감</th>
+          <th scope="col">유형</th>
+          <th class="bg-danger text-light font-weight-bold" scope="col">홈</th>
+          <th class="bg-primary text-light font-weight-bold" scope="col">어웨이</th>
+          <th scope="col">배당1</th>
+          <th scope="col">확률</th>
+          <th scope="col">배당2</th>
+          <th scope="col">확률</th>
+          <th scope="col">배당3</th>
+          <th scope="col">확률</th>
+          <th scope="col">위치</th>
+          <!-- <th scope="col">추천선택</th> -->
+
+        </tr>
+      </thead>
+      <tbody>
+        {% for idx, data in df_normal.iterrows %}
+        <tr>
+          <th scope="row">{{data.num}}</th>
+          <td>{{data.date}}</td>
+          <td>{{data.endtime}}</td>
+          <td>{{data.gametype}}</td>
+          
+          <td class="font-weight-bold"><button type="button" class="btn btn-danger">{{data.home}}</button></td>
+          <td class="font-weight-bold"><button type="button" class="btn btn-primary">{{data.away}}</button></td>
+          {% if data.final_pick == 1 %}
+          <td><button type="button" class="btn btn-danger font-weight-bold">{{data.odd1}}</button></td>
+          {% else %}
+          <td><button type="button" class="btn btn-outline-light font-weight-bold">{{data.odd1}}</button></td>
+          {% endif %}
+
+          <td>{{data.odd1_prob_str}}</td>
+          
+          {% if data.final_pick == 2 %}
+          <td><button type="button" class="btn btn-danger font-weight-bold">{{data.odd2}}</button></td>
+          {% elif data.odd2 == 0 %}
+          <td class="transparent-text"></td>
+          {% else %}
+          <td><button type="button" class="btn btn-outline-light font-weight-bold">{{data.odd2}}</button></td>
+          {% endif %}
+
+          {% if data.odd2_prob_str == "0.0%" %}
+          <td></td>
+          {% else %}
+          <td>{{data.odd2_prob_str}}</td>
+          {% endif %}
+
+          {% if data.final_pick == 3 %}
+          <td><button type="button" class="btn btn-danger font-weight-bold">{{data.odd3}}</button></td>
+          {% else %}
+          <td><button type="button" class="btn btn-outline-light font-weight-bold">{{data.odd3}}</button></td>
+          {% endif %}
+
+          <td>{{data.odd3_prob_str}}</td>
+          <td>{{data.pick_idx}}</td>
+        </tr>
+        
+        
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

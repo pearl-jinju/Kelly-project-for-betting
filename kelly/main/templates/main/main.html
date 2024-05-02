@@ -4,6 +4,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+  <script>
+    function pick(){
+      var url = "/pick?games=" + 10
+
+      window.location.href = url;
+    }
+  </script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>딸깍! 한번으로 쉽게 돈을 벌어보자!</title>
@@ -13,36 +22,95 @@
 </head>
 <body>
 
-<div class="container">
+<div class="container text-center">
   <div class="row justify-content-center">
-    <div class="col-md-8">
-      <h1 class="text-center mb-4">Kelly Project</h1>
+    <div class="col-md-18">
+      <h1 class="text-center mb-4">금일 경기</h1>
+      <!-- <div class="form-group">
+        <input type="text" class="form-control" id="games" placeholder="pick 게임 수">
+      </div> -->
+      <button onclick="pick()" type="button" class="btn btn-success mt-4 mb-4 font-weight-bold" >------------------------    PICK 생성        -----------</button>
+
+
+
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th scope="col">경기 번호</th>
-            <th scope="col">팀명</th>
-            <th scope="col">캘리비율</th>
-            <th scope="col">배당률</th>
-            <th scope="col">배팅금액</th>
-            <th scope="col">잔액</th>
+            <th scope="col">번호</th>
+            <th scope="col">일자</th>
+            <th scope="col">마감</th>
+            <th scope="col">유형</th>
+            <th class="bg-danger text-light font-weight-bold" scope="col">홈</th>
+            <th class="bg-primary text-light font-weight-bold" scope="col">어웨이</th>
+            <th scope="col">배당1</th>
+            <th scope="col">확률</th>
+            <th scope="col">배당2</th>
+            <th scope="col">확률</th>
+            <th scope="col">배당3</th>
+            <th scope="col">확률</th>
+            <!-- <th scope="col">추천선택</th> -->
+
           </tr>
         </thead>
         <tbody>
-          {% for idx, data in betting_df.iterrows %}
+          {% for idx, data in df.iterrows %}
           <tr>
-            <th scope="row">{{data.no}}</th>
-            <td>{{data.teams}}</td>
-            <td>{{data.kelly_rate}}</td>
-            <td>{{data.odd}}</td>
-            <td>{{data.amt}}</td>
-            <td>{{data.cash}}</td>
+            <th scope="row">{{data.num}}</th>
+            <td>{{data.date}}</td>
+            <td>{{data.endtime}}</td>
+            <td>{{data.gametype}}</td>
+            
+            <td class="font-weight-bold"><button type="button" class="btn btn-danger">{{data.home}}</button></td>
+            <td class="font-weight-bold"><button type="button" class="btn btn-primary">{{data.away}}</button></td>
+            {% if data.odd1 > 4 %}
+            <td><button type="button" class="btn btn-danger font-weight-bold">{{data.odd1}}</button></td>
+            {% elif data.odd1 > 3 %}
+            <td><button type="button" class="btn btn-warning font-weight-bold">{{data.odd1}}</button></td>
+            {% elif data.odd1 > 2 %}
+            <td><button type="button" class="btn btn-success font-weight-bold">{{data.odd1}}</button></td>
+            {% else %}
+            <td><button type="button" class="btn btn-info font-weight-bold">{{data.odd1}}</button></td>
+            {% endif %}
+
+            <td>{{data.odd1_prob_str}}</td>
+            
+            {% if data.odd2 > 4 %}
+            <td><button type="button" class="btn btn-danger font-weight-bold">{{data.odd2}}</button></td>
+            {% elif data.odd2 > 3 %}
+            <td><button type="button" class="btn btn-warning font-weight-bold">{{data.odd2}}</button></td>
+            {% elif data.odd2 > 2 %}
+            <td><button type="button" class="btn btn-success font-weight-bold">{{data.odd2}}</button></td>
+            {% elif data.odd2 > 1 %}
+            <td><button type="button" class="btn btn-info font-weight-bold">{{data.odd2}}</button></td>
+            {% elif data.odd2 == 0 %}
+            <td class="transparent-text"></td>
+            {% endif %}
+
+            {% if data.odd2_prob_str == "0.0%" %}
+            <td></td>
+            {% else %}
+            <td>{{data.odd2_prob_str}}</td>
+            {% endif %}
+
+            {% if data.odd3 > 4 %}
+            <td><button type="button" class="btn btn-danger font-weight-bold">{{data.odd3}}</button></td>
+            {% elif data.odd3 > 3 %}
+            <td><button type="button" class="btn btn-warning font-weight-bold">{{data.odd3}}</button></td>
+            {% elif data.odd3 > 2 %}
+            <td><button type="button" class="btn btn-success font-weight-bold">{{data.odd3}}</button></td>
+            {% elif data.odd3 > 1 %}
+            <td><button type="button" class="btn btn-info font-weight-bold">{{data.odd3}}</button></td>
+            {% elif data.odd3 == 0 %}
+            <td class="transparent-text"></td>
+            {% endif %}
+            <td>{{data.odd3_prob_str}}</td>
+            <!-- <td>{{data.final_pick}}</td> -->
           </tr>
           {% endfor %}
         </tbody>
       </table>
 
-      <h1 class="text-center mb-4">-------------</h1>
+      <!-- <h1 class="text-center mb-4">{{df}}</h1> -->
     </div>
   </div>
 </div>
