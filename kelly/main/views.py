@@ -15,6 +15,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from ast import literal_eval
+from selenium.common.exceptions import NoSuchElementException
 
 import time
 import random
@@ -78,8 +79,8 @@ def cal_prob_from_odd(ls):
     if len(ls)==2:
         x = ls[0]
         y = ls[1]
-        x_prob = y/(x+y)
-        y_prob = x/(x+y)
+        x_prob = round(y/(x+y),4)
+        y_prob = round(x/(x+y),4)
         return [x_prob, y_prob]
     # 배당이 3개라면
     else:
@@ -91,9 +92,9 @@ def cal_prob_from_odd(ls):
         z_prob = (x+y)/(x+y+z)
 
         prob_sum = x_prob+ y_prob+z_prob
-        x_prob = x_prob/prob_sum
-        y_prob = y_prob/prob_sum
-        z_prob = z_prob/prob_sum
+        x_prob = round(x_prob/prob_sum,4)
+        y_prob = round(y_prob/prob_sum,4)
+        z_prob = round(z_prob/prob_sum,4)
         return [x_prob, y_prob, z_prob]
     
 def random_select_to_idx(ls):
@@ -992,9 +993,50 @@ class DBsearch(APIView):
 class Save_All_Data(APIView):
     def get(self, request):
 
-        Match_RESULT_DB.objects.all().delete()
+        # Match_RESULT_DB.objects.all().delete()
         global driver
         chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('headless') # headless 모드 설정
+        chrome_options.add_argument("window-size=1920x1080") # 화면크기(전체화면)
+        chrome_options.add_argument("disable-gpu") 
+        chrome_options.add_argument("disable-infobars")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument('--disable-images')
+        chrome_options.add_argument('--blink-settings=imagesEnabled=false')
+
+        # 속도 향상을 위한 옵션 해제
+        prefs = {'profile.default_content_setting_values':
+                  {
+                    'cookies' : 2,
+                    'images': 2,
+                    'plugins' : 2, 
+                    'popups': 2,
+                    'geolocation': 2,
+                    'notifications' : 2,
+                    'auto_select_certificate':  2,
+                    'fullscreen' : 2,
+                    'mouselock' : 2, 
+                    'mixed_script': 2,
+                    'media_stream' : 2, 
+                    'media_stream_mic' : 2, 
+                    'media_stream_camera': 2,
+                    'protocol_handlers' : 2, 
+                    'ppapi_broker' : 2, 
+                    'automatic_downloads': 2, 
+                    'midi_sysex' : 2, 
+                    'push_messaging' : 2, 
+                    'ssl_cert_decisions': 2,
+                    'metro_switch_to_desktop' : 2, 
+                    'protected_media_identifier': 2, 
+                    'app_banner': 2, 'site_engagement' : 2,
+                    'durable_storage' : 2
+                                      }
+                                      }   
+        
+
+        chrome_options.add_experimental_option('prefs', prefs)
+
+        
         
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         driver.implicitly_wait(1)
@@ -1052,11 +1094,10 @@ class Save_All_Data(APIView):
             # 드라이버 url 연결 
             
             driver.get(url)
-            driver.implicitly_wait(1)
-
-
+            driver.implicitly_wait(10)
+            # 경기 수 초기화
             sports_cnt = 0
-            
+
             ccs_list = []
             for i in tqdm(range(5000)):
                 ccs = str('#tbd_gmBuySlipList > tr:nth-child(') + str(i+1) + ')'
@@ -1071,20 +1112,21 @@ class Save_All_Data(APIView):
                 except:
 
                     break
-
+            
             # 결과 df 생성
             result_df =pd.DataFrame()
+            result_ls = []
+            # for idx in tqdm(range(1,3)):
             for idx in tqdm(range(1,sports_cnt+1)):
-                temp_ls = []
+                
                 # 경기일자
                 date = driver.find_element(By.CSS_SELECTOR,'#tbd_gmBuySlipList > tr:nth-child('+ str(idx) +') > td:nth-child(7)').text[:5]
-                
                 # 1. 경기의 번호와 홈팀/어웨이팀의 이름을 가져온다.
                 betting_name = driver.find_element(By.CSS_SELECTOR,'#tbd_gmBuySlipList > tr:nth-child('+ str(idx) +') > td:nth-child(1) > span').text
                 betting_type = driver.find_element(By.CSS_SELECTOR,'#tbd_gmBuySlipList > tr:nth-child('+ str(idx) +') > td:nth-child(4) > span').text
                 betting_sports = driver.find_element(By.CSS_SELECTOR,'#tbd_gmBuySlipList > tr:nth-child('+ str(idx) +') > td:nth-child(3) > span.icoGame.small').text
                 league_name = driver.find_element(By.CSS_SELECTOR,'#tbd_gmBuySlipList > tr:nth-child('+ str(idx) +') > td:nth-child(3) > span.db.fs11').text
-
+                print(betting_name,betting_type,betting_sports,league_name)
                 handicap_value = 0
                 under_over_value = 0
                 try:
@@ -1095,8 +1137,11 @@ class Save_All_Data(APIView):
                         handicap_value = value
                     elif value_type =="U/O":
                         under_over_value = value
-                except:
+
+                except NoSuchElementException:
                     pass
+
+                print(handicap_value,under_over_value)
 
                 match_result =[]
                 match_winner = 0
@@ -1109,7 +1154,7 @@ class Save_All_Data(APIView):
                     # 어웨이 점수 가져오기
                     value_away = driver.find_element(By.CSS_SELECTOR,'#tbd_gmBuySlipList > tr:nth-child('+ str(idx) +') > td:nth-child(5) > div > div.cell.tal > strong').text.replace('점수\n',"")
                     match_result.append(value_away)
-                except:
+                except NoSuchElementException:
                     pass
 
                 try:
@@ -1117,11 +1162,15 @@ class Save_All_Data(APIView):
                     value_under_over = driver.find_element(By.CSS_SELECTOR,'#tbd_gmBuySlipList > tr:nth-child('+ str(idx) +') > td:nth-child(5) > div > strong').text.replace('점수\n',"").replace('총 ',"")
                     match_result.append(value_under_over)
 
-                except:
+                except NoSuchElementException:
                     pass
+
+                print(match_result)
+
                 home_team = call_name(idx,'home')
                 away_team = call_name(idx,'away')
 
+                print(home_team,away_team)
                 # 승자분석
                 try:
 
@@ -1163,9 +1212,11 @@ class Save_All_Data(APIView):
                         else:
                             match_winner = 1
 
-                except:
+                except NoSuchElementException:
                     match_result = []
                     match_winner = 0
+
+                print(match_winner)
 
                     
                 try:
@@ -1177,18 +1228,25 @@ class Save_All_Data(APIView):
                         except:
                             break
                     prob_from_odd_list = cal_prob_from_odd(odd_list)
-                except:
+                except NoSuchElementException:
                     odd_list=[]
                     prob_from_odd_list = []
                     # selected_idx = random_select_to_idx(odd_list)
+
+                print(odd_list)
+                print(prob_from_odd_list)
                 
                 # '번호','경기일자','마감일시,'게임유형','홈팀','원정팀','배당률리스트','배당별확률','최종선택위치'
-                temp_df = pd.DataFrame([[betting_name,date,betting_type,home_team,away_team,odd_list,prob_from_odd_list,betting_sports,league_name,handicap_value,under_over_value,match_result,match_winner,match_date]])
-                temp_df.columns = ['번호','경기일자','게임유형','홈팀','원정팀','배당률리스트','배당별확률','스포츠명','리그명','핸디','언오버','경기결과','승자','회차']
-                result_df = pd.concat([result_df,temp_df])
+
+                result_ls.append([betting_name,date,betting_type,home_team,away_team,odd_list,prob_from_odd_list,betting_sports,league_name,handicap_value,under_over_value,match_result,match_winner,match_date])
+                # # temp_df = pd.DataFrame([[betting_name,date,betting_type,home_team,away_team,odd_list,prob_from_odd_list,betting_sports,league_name,handicap_value,under_over_value,match_result,match_winner,match_date]])
+                # temp_df.columns = ['번호','경기일자','게임유형','홈팀','원정팀','배당률리스트','배당별확률','스포츠명','리그명','핸디','언오버','경기결과','승자','회차']
+                # result_df = pd.concat([result_df,temp_df],axis=0)
             # DB에 저장하는데 우선 중복검사를 한후에 할것
 
-            
+            result_df = pd.DataFrame(result_ls)
+            result_df.columns = ['번호','경기일자','게임유형','홈팀','원정팀','배당률리스트','배당별확률','스포츠명','리그명','핸디','언오버','경기결과','승자','회차']
+            print(result_df)
             new_data_cnt = 0
 
             for index, row in result_df.iterrows():
@@ -1220,13 +1278,16 @@ class Save_All_Data(APIView):
                     match_result_value = row['경기결과']
                     match_winner = row['승자']
                     match_date = row['회차']
+        
 
                     Match_RESULT_DB.objects.create(
                     num = num,
                     date = date,
                     betting_type = betting_type,
-                    home_team = home_team,
+                    home_team  =home_team,
                     away_team = away_team,
+                    odd_list = odd_list,
+                    prob_from_odd_list  =  prob_from_odd_list,
                     betting_sports = betting_sports,
                     league_name = league_name,
                     handicap_value = handicap_value,
